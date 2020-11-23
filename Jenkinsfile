@@ -5,8 +5,9 @@ def prepareK8sTools(){
         && chmod +x kubectl \
         && curl -LO https://get.helm.sh/helm-v3.4.0-rc.1-linux-amd64.tar.gz \
         && curl -LO https://github.com/roboll/helmfile/releases/download/v${HELMFILE_VERSION}/helmfile_linux_amd64 \
+        && mv helmfile_linux_amd64 helmfile \
         && chmod +x helmfile \
-        && curl -SsL https://get.helm.sh/helm-v${HELM3_VERSION}-linux-amd64.tar.gz | tar -xzf -
+        && curl -SsL https://get.helm.sh/helm-v${HELM3_VERSION}-linux-amd64.tar.gz | tar -xzf - \
         && mv linux-amd64/helm . \
         && chmod +x helm \
         && rm -rf linux-amd64/ \
@@ -33,7 +34,6 @@ pipeline{
                     sh '''#!/bin/bash -e
                     export PATH=.bin:/home/jenkins/.local/bin:$PATH
                     aws eks update-kubeconfig --name sndbx  --alias sndbx
-                    helm repo update
                     helmfile sync
                     '''
                 }

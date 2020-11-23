@@ -16,8 +16,6 @@ fluentbit:
     Mem_Buf_Limit: 200MB
 
 fluentd:
-  security:
-    serviceAccount: logging-operator-fluentd-irsa
   resources:
     requests:
       memory: 1Gi
