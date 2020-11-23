@@ -1,0 +1,44 @@
+templates:
+  default: &default
+    namespace: logging
+    missingFileHandler: Warn
+    values:
+    - config/{{`{{ .Release.Name }}`}}/values.yaml
+
+helmDefaults:
+  wait: true
+  timeout: 600
+
+
+repositories:
+- name: elastic
+  url: https://helm.elastic.co
+- name: banzaicloud-stable
+  url: https://kubernetes-charts.banzaicloud.com
+
+
+
+environments:
+  sndbx:
+releases:
+- <<: *default
+  name: elasticsearch
+  chart: elastic/elasticsearch
+  version: '7.9.3'
+
+- <<: *default
+  name: kibana
+  chart: elastic/kibana
+  version: '7.9.3'
+
+- <<: *default
+  name: logging-operator
+  namespace: kube-system
+  chart: banzaicloud-stable/logging-operator
+  version: '3.5.0'
+
+- <<: *default
+  name: logging-operator-logging
+  chart: banzaicloud-stable/logging-operator-logging
+  version: '3.5.0'
+

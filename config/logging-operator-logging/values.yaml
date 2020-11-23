@@ -1,0 +1,62 @@
+fluentbit:
+  tolerations:
+  - operator: Exists
+  resources:
+    requests:
+      memory: 300Mi
+    limits:
+      memory: 400Mi
+  positiondb:
+    hostPath:
+      path: ""
+  bufferStorageVolume:
+    hostPath:
+      path: ""
+  inputTail:
+    Mem_Buf_Limit: 200MB
+
+fluentd:
+  security:
+    serviceAccount: logging-operator-fluentd-irsa
+  resources:
+    requests:
+      memory: 1Gi
+    limits:
+      memory: 2Gi
+
+clusterFlows:
+- name: es-flow
+  spec:
+    match:
+    - select:
+        namespaces: [hello-world]
+    filters:
+    - tag_normaliser: {}
+    - parser:
+        remove_key_name_field: true
+        key_name: message
+        reserve_data: true
+        parse:
+          type: nginx
+    outputRefs:
+    - elsaticsearch
+
+clusterOutputs:
+- name: elsaticsearch
+  spec:
+    elasticsearch:
+      host: logs-master.logging
+      port: 9200
+      logstash_format: true
+      type_name: nginx
+      scheme: https
+      ssl_verify: false
+      ssl_version: TLSv1_2
+      buffer:
+        timekey: 1m
+        timekey_wait: 10s
+        timekey_use_utc: true
+        flush_thread_count: 8
+
+
+
